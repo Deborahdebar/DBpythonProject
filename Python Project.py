@@ -115,3 +115,70 @@ print(cleaned_covid_data.shape)
 ##Check how many countries now remain as England, Scotland, Wales and NI have been removed.
 print(len(cleaned_covid_data.country.unique()))
 ##This resulted in 149 countries - which is correct (153 were listed earlier now I have removed 4 therefore 149 is correct)
+
+## Check the unique values on the complete dataset
+print(cleaned_covid_data.nunique())
+##again from this I can confirm 149 countries/iso codes and  also 26 vaccine brand combinations
+
+## To see how many unique  vaccine brand combinatons, although I can see this from the above
+## To find out how many unique brand combinations offered I can see 26 from the below
+print(len(cleaned_covid_data.vaccines.unique()))
+
+## Different countries are using different brands and some are using a combination in the fight against Covid-19.
+print(cleaned_covid_data['vaccines'].value_counts())
+## At a quick glance it looks like Moderna, Oxford/ AstraZeneca, Pfizer/ BioNTech combinaton is used the most.
+##i.e. it appears 2005 times in the Dataset - there are 2005 rows that have this combination.
+
+##See where 'Moderna, Oxford/ AstraZeneca, Pfizer/ BioNTech brand combination features in the dataset
+df_blended_top_3_brands=cleaned_covid_data[cleaned_covid_data['vaccines']=='Moderna, Oxford/AstraZeneca, Pfizer/BioNTech']
+print(df_blended_top_3_brands.shape)
+##This indicates that there is 2005 rows and 14 cols that contain Vaccines - Moderna, Oxford/AstraZeneca, Pfizer/BioNTech'
+
+print(df_blended_top_3_brands['vaccines'].unique())
+
+df_blended_top_3_brands=df_blended_top_3_brands.sort_values(by='total_vaccinations', ascending=False)
+print(df_blended_top_3_brands.head(10))
+
+print(df_blended_top_3_brands.groupby('country').agg(['max','min','mean']))
+
+## Moderna, Oxford/AstraZeneca, Pfizer/BioNTech country daily vaccinations using this brand
+plt.figure(figsize=(20,14))
+sns.barplot(df_blended_top_3_brands['daily_vaccinations'],df_blended_top_3_brands['country'])
+plt.title('Country VS daily_vaccinations - for those using Moderna, Oxford/AstraZeneca, Pfizer/BioNTech', fontsize=20)
+plt.xlabel('daily_vaccinations', fontsize=20)
+plt.ylabel('Country', fontsize=20)
+plt.show()
+
+## Now I am going to create a dictionary to see what countries are using what vaccine brand
+# Create a dictionary of each vaccine combination and its country of usage.
+
+dict = {}
+for v in cleaned_covid_data["vaccines"].unique():
+    dict[v] = [cleaned_covid_data["country"][c] for c in cleaned_covid_data[cleaned_covid_data["vaccines"] == v].index]
+
+# If I display this directly, I will get repeated values within the key, as the country names appear multiple times.
+# Therefore need to remove repeated values in each key.
+
+output = {}
+for key, value in dict.items():
+    output[key] = set(value)
+output
+
+# Find the number of values for each key in the dictionary.
+# This allows me to count the number of countries using each vaccine combination.
+for key, value in output.items():
+    result = print(key, len([item for item in value if item]))
+print(result)
+## From the below we can see 38 countries are using Oxford / AstraZeneca,
+## 24 countries Moderna, Oxford/AstraZeneca, Pfizer/BioNTech
+## 21 countries are using Pfizer/BioNTech,
+## 9 countries are using Sputnik v
+
+## Which country is using what vaccine, create new column that will print the string  'is using the following Covid19 vaccine:'
+country_usage= cleaned_covid_data['country_vacc_brand']=cleaned_covid_data['country'] + ', is using the following Covid19 vaccine: ' +  cleaned_covid_data['vaccines']
+for C in cleaned_covid_data['country_vacc_brand'].unique():
+    print(C)
+
+## To check that I did create a new column
+print(cleaned_covid_data.shape)
+## 14 cols - which is what I expected 
