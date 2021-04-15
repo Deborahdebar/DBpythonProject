@@ -66,7 +66,7 @@ print(covid_vac_prog.dtypes)
 ## To list of all the columns in the dataset and the type of data each column contains
 print(covid_vac_prog.info())
 
-## All cols appear to have the correct dataset except for the date col - I saw this in point 10.
+## All cols appear to have the correct dataset except for the date col - I saw this earlier
 ## The dates are not represented by the correct data type
 ## I am going to use the .to_datetime() to parse the the column as Datetime
 covid_vac_prog['date']=pd.to_datetime(covid_vac_prog['date'])
