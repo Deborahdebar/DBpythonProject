@@ -211,6 +211,18 @@ for amount in total_vacc.patches:
     total_vacc.annotate('{:.2f}'.format(amount.get_height()), (amount.get_x(), amount.get_height()+1))
 plt.show()
 
+# Visualise top 30 countires in terms of total vaccinations
+top = 30
+vaccinations_data = cleaned_covid_data.groupby('country')['total_vaccinations'].max()
+vaccinations_data = pd.DataFrame(vaccinations_data)
+vaccinations_data = vaccinations_data.sort_values(ascending=False, by='total_vaccinations').iloc[:top]
+fig = px.bar(x=vaccinations_data.index, y=vaccinations_data['total_vaccinations'],
+             color=vaccinations_data.index,
+             title=f'Top {top} Countries - Total Vaccinations',
+             labels={"x": "Country", "y": "Number of Vaccinations"},
+            color_discrete_sequence =px.colors.sequential.Electric)
+fig.show()
+
 # World COVID Vaccine Progress by Time
 # Vaccines were first administered in early Dec 2020.
 # Check to see how the world has made the progress in total vaccination numbers, people fully vaccinated over the past few months.
@@ -249,7 +261,7 @@ sorted_people_per_100.style.background_gradient(cmap = 'RdYlGn_r')
 people_fully = cleaned_covid_data.groupby(['country'])['people_fully_vaccinated_per_hundred'].max().reset_index()
 people_fully_vac = people_fully.sort_values(by='people_fully_vaccinated_per_hundred',ascending = False, ignore_index = True)
 people_fully_vac.style.background_gradient(cmap = 'CMRmap_r')
-# Gibralter followed by Israel and Seychelles has the overall highest number of people fully vaccinated per hundred.
+# Gibraltar followed by Israel and Seychelles has the overall highest number of people fully vaccinated per hundred.
 # While the US has the highest number of vaccinations(US has administerd 133.3 million doses of COVID-19)
 
 # Plot the above i.e. top ten total number of vaccination doses administered per 100 people in the total population
@@ -305,6 +317,33 @@ plt.show()
 # To see how daily vaccines are administered in certain countries
 country_check = cleaned_covid_data[["date", "country", "daily_vaccinations"]]
 print(country_check.head(10))
+
+# China was looked at first country wise as this is where the virus
+# As China had the first reported case of COVID-19,
+# I wanted to see when they first started vaccinating.
+country_china = country_check.loc[country_check['country'] == 'China']
+print(country_china)
+
+# We can now see that the first daily vaccination was reported on 16th December
+# and last recorded date in the dataset is 25th March
+print(country_china.iloc[[1, -1]])
+
+#China min date within the dataset
+cleaned_covid_data.loc[cleaned_covid_data["country"] == "China", "date"].min()
+# This will report the first date that activity was reported for China
+# However there is no daily vaccinations on that min day as shown below.
+# But there is a value somewhere in the dataset that is related to this min date
+# just not daily vaccinations
+
+# Lets plot how the daly vaccination progress looks in China
+# Set the ticks to show every 7 days to avoid overlapping of dates.
+# Autoformat the layout of the x-axis ticks.
+fig, ax = plt.subplots(figsize=(20, 7))
+sns.lineplot(ax=ax, data=country_china, x='date', y='daily_vaccinations', marker="8", linestyle= ":", color="red")
+myLocator = mticker.MultipleLocator(7)
+ax.xaxis.set_major_locator(myLocator)
+fig.autofmt_xdate()
+fig.show()
 
 # Check the minimum date within the dataset - this would be the first reported activity in the dataset.
 print(cleaned_covid_data["date"].min())
@@ -436,4 +475,52 @@ pct_change(2107,1791)
 
 # Latvia change from 11th until 19th -60% drop....
 pct_change(2107,853)
+
+# I needed to check population of certain countries - needed to get another dataset that has this info
+# rather than a general Google search
+data_pop = pd.read_csv("/Users/deborahbarrett/Downloads/worldometer_coronavirus_summary_data.csv")
+print(data_pop.shape)
+
+# Examine the names of the columns & to see if all are needed
+print(data_pop.columns)
+
+#Check data types of this additional dataset that has population
+print(data_pop.info())
+
+## Then merge with first dataset on the country cols as this is common to both datasets
+data_with_pop_merged = pd.merge(cleaned_covid_data, data_pop, how='left', on='country')
+
+# Check the first 5 rows of the merged dataset
+print(data_with_pop_merged.head())
+
+print(data_with_pop_merged.info())
+
+# Check the missing values in the merged dataset
+missing_values_merged = data_with_pop_merged.isnull().sum()
+print(missing_values_merged)
+
+# Replace the missing values with 0
+cleaned_merged_data = data_with_pop_merged.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc'else x.fillna('unknown'))
+print(cleaned_merged_data.isnull().sum())
+
+# To list of all the columns in the dataset and the type of data each column contains
+print(cleaned_merged_data.info())
+
+# Use country & population columns within the merged dataset
+cleaned_merged_data = data_with_pop_merged[["country", "population"]]
+print(cleaned_merged_data.head(10))
+print(cleaned_merged_data.tail(10))
+
+# Unique number of population
+print(len(cleaned_merged_data.population.unique()))
+
+# Check the population of Gibraltar
+print(cleaned_merged_data[cleaned_merged_data["country"] == "Gibraltar"])
+
+# Check the population of Seychelles
+print(cleaned_merged_data[cleaned_merged_data["country"] == "Seychelles"])
+
+# Check the population of Israel
+print(cleaned_merged_data[cleaned_merged_data["country"] == "Israel"])
+
 
