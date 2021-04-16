@@ -40,7 +40,7 @@ print(covid_vac_prog[0:2])
 ## Check positional index 0 and last row
 print(index_check.iloc[[0, -1]])
 
-## Get an overview of some summary stats
+## Get an overview of some basic descriptive stats for all numeric columns
 print(covid_vac_prog.describe())
 
 ## Get to know the names of the columns to see if all are needed
@@ -181,4 +181,19 @@ for C in cleaned_covid_data['country_vacc_brand'].unique():
 
 ## To check that I did create a new column
 print(cleaned_covid_data.shape)
-## 14 cols - which is what I expected 
+## 14 cols - which is what I expected
+
+## When I wanted to get an overview of some statistical information within the dataset, I got some '+e'within the dataset earlier
+## Used the options.display.float format to make data easier to read when using the pandas describe ()
+pd.options.display.float_format = "{:.2f}".format
+print(cleaned_covid_data.describe())
+
+## Find the maximum number of total vaccinations for each country and display them in descending order.
+## Total Vaccinations refers to the absolute number of total immunizations in the country.
+total_country_vacc = cleaned_covid_data.groupby(['country'])['total_vaccinations'].max().reset_index()
+total_sorted = total_country_vacc.sort_values('total_vaccinations', ascending = False, ignore_index = True)
+print(total_sorted.style.background_gradient(cmap = 'Oranges'))
+## US has administerd 133.3 million doses of COVID-19
+## China has administered 91.3 million
+## Compared to the Bahamas which  has administered 110 doses of COVID vaccines so far.
+
