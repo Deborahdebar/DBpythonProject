@@ -72,7 +72,8 @@ print(covid_vac_prog.info())
 # The dates are not represented by the correct data type
 # I am going to use the .to_datetime() to parse the the column as Datetime
 covid_vac_prog['date']=pd.to_datetime(covid_vac_prog['date'])
-## Now I am going to check the new type of the date column I have changed
+
+# Now I am going to check the new type of the date column I have changed
 print(covid_vac_prog['date'].dtype)
 
 # Double checking that all datatypes are now correct
@@ -84,7 +85,7 @@ print(missing_values_count)
 
 # Plot missing values
 covid_vac_prog.isna().sum().plot(kind="bar")
-sns.set_style("darkgrid") ##There are five preset seaborn themes: darkgrid, whitegrid, dark, white, and ticks
+sns.set_style("darkgrid")  # There are five preset seaborn themes: darkgrid, whitegrid, dark, white, and ticks
 sns.set_context("paper")
 plt.xticks(rotation = 90)
 plt.tight_layout()
@@ -96,18 +97,19 @@ plt.show()
 # 'biufc' represents - boolean, integer, unicode, float& complex data type
 # The below fills 0 for the biufc type values and fills unknown other wise.
 cleaned_covid_data = covid_vac_prog.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc'else x.fillna('unknown'))
-##Now to check if there is any missing values and that the "cleaned data" was done correctly
+# Now to check if there is any missing values and that the "cleaned data" was done correctly
 print(cleaned_covid_data.isnull().sum())
 # This now shows there is no missing values
 
-# As a checking point (sanity check) I am going to check my rows and columns again to ensure these are all intact as they should be
+# As a checking point (sanity check) I am going to check my rows and columns
+# again to ensure these are all intact as they should be
 print(cleaned_covid_data.shape)
 # All looks as it should be 8191 rows and 13 columns as I dropped the two cols website and source earlier
 
-# to see how many times a Country appears in the dataset
-# appear the exact same number of times as that of the United Kingdom. As these are part of the UK I could delete these rows.
+# To see how many times a Country appears in the dataset
 print(covid_vac_prog['country'].value_counts())
 # interestingly I can see England, Northern Ireland, Scotland, Wales
+# As these are part of the UK I decide to delete these rows as this is represented by UK
 # Add .head(10) after to display only top 10 if I want.
 
 # Remove Scotland, England, Northern Ireland, Wales as these are all included under the United Kingdom.
@@ -115,16 +117,17 @@ print(covid_vac_prog['country'].value_counts())
 cleaned_covid_data = cleaned_covid_data[cleaned_covid_data.country.apply(lambda x: x not in ['England', 'Scotland', 'Wales', 'Northern Ireland'])]
 print(cleaned_covid_data.shape)
 
-#Check how many countries now remain as England, Scotland, Wales and NI have been removed.
+# Check how many countries now remain as England, Scotland, Wales and NI have been removed.
 print(len(cleaned_covid_data.country.unique()))
-#This resulted in 149 countries - which is correct (153 were listed earlier now I have removed 4 therefore 149 is correct)
+# This resulted in 149 countries - which is correct
+# 153 were listed earlier now I have removed 4 therefore 149 is correct
 
 # Check the unique values on the complete dataset
 print(cleaned_covid_data.nunique())
-# again from this I can confirm 149 countries/iso codes and  also 26 vaccine brand combinations
+# Again from this I can confirm 149 countries/iso codes and also 26 vaccine brand combinations
 
-# To see how many unique vaccine brand combinations, although I can see this from the above
-# To find out how many unique brand combinations offered I can see 26 from the below
+
+# To find out how many unique brand combinations offered I can see 26 from the below or even above
 print(len(cleaned_covid_data.vaccines.unique()))
 
 # Different countries are using different brands and some are using a combination in the fight against Covid-19.
@@ -135,7 +138,7 @@ print(cleaned_covid_data['vaccines'].value_counts())
 # See where 'Moderna, Oxford/ AstraZeneca, Pfizer/ BioNTech brand combination features in the dataset
 df_blended_top_3_brands=cleaned_covid_data[cleaned_covid_data['vaccines']=='Moderna, Oxford/AstraZeneca, Pfizer/BioNTech']
 print(df_blended_top_3_brands.shape)
-# This indicates that there is 2005 rows and 14 cols that contain Vaccines - Moderna, Oxford/AstraZeneca, Pfizer/BioNTech'
+# This indicates that there is 2005 rows & 14 cols that contain Vaccines - Moderna, Oxford/AstraZeneca, Pfizer/BioNTech'
 
 print(df_blended_top_3_brands['vaccines'].unique())
 
@@ -188,11 +191,11 @@ print(cleaned_covid_data.shape)
 
 # When I wanted to get an overview of some statistical information within the dataset,
 # I got some '+e' within the dataset earlier
-# Used the options.display.float format to make data easier to read when using the pandas describe ()
+# Then I used the options.display.float format to make data easier to read when using the pandas describe ()
 pd.options.display.float_format = "{:.2f}".format
 print(cleaned_covid_data.describe())
 
-# Find the maximum number of total vaccinations for each country and display them in descending order.
+# Find the max. number of total vaccinations for each country and display them in descending order.
 # Total Vaccinations refers to the absolute number of total immunizations in the country.
 total_country_vacc = cleaned_covid_data.groupby(['country'])['total_vaccinations'].max().reset_index()
 total_sorted = total_country_vacc.sort_values('total_vaccinations', ascending = False, ignore_index = True)
@@ -225,15 +228,15 @@ fig.show()
 
 # World COVID Vaccine Progress by Time
 # Vaccines were first administered in early Dec 2020.
-# Check to see how the world has made the progress in total vaccination numbers, people fully vaccinated over the past few months.
+# Check to see how the world has made progress in total vacc no's, people fully vaccinated over the past few months.
 # Group by date and take the sum of each feature for all countries.
-# Plot to see how 'total vaccinations' and 'people fully vaccinated' have progressed over a period of time.
-# groupby date and get the sum
+# Plot to see how 'total vaccinations' & 'people fully vaccinated' have progressed over a period of time.
 covid_vacc_by_date = cleaned_covid_data.groupby('date').sum()
 fig = px.bar(covid_vacc_by_date, x = covid_vacc_by_date.index, y ='total_vaccinations', hover_data=['total_vaccinations'],color='total_vaccinations',height=600, title='Total Vaccinations from 13th December to 25th March ')
 fig.show()
 
-# Total number of people vaccinated - a person, depending on the immunization scheme, will receive one or more (typically 2) vaccines;
+# Total number of people vaccinated - a person, depending on the immunization scheme,
+# will receive one or more (typically 2) vaccines;
 # At a certain moment, the number of vaccination might be larger than the number of people;
 people_vaccinated = cleaned_covid_data.groupby(['country'])['people_vaccinated'].max().reset_index()
 people_vaccinated_sorted = people_vaccinated.sort_values(by='people_vaccinated', ascending = False, ignore_index = True).style.background_gradient(cmap = 'Blues')
@@ -248,12 +251,13 @@ print(people_vaccinated_sorted)
 people_per_100 = cleaned_covid_data.groupby(['country'])['people_vaccinated_per_hundred'].max().reset_index()
 sorted_people_per_100 = people_per_100.sort_values(by='people_vaccinated_per_hundred', ascending = False, ignore_index = True)
 sorted_people_per_100.style.background_gradient(cmap = 'RdYlGn_r')
-# From this we can see that Gibraltar, Seychelles and Israel have the highest number of vaccinations does administered per 100
+# From this we can see that Gibraltar, Seychelles & Israel have the highest no. of vaccinations doses admin. per 100
 # Biggest number in red, smaller number decreasing in colour to the smallest numbers in green.
 # US overall has the highest number of vaccinations administered,
 # However Gibraltar has the overall highest percentage of vaccinations administered per 100 people.
 # I will need to get the populations sizes of these countries
-# From the visualization it is evident that Gibraltar, Seychelles and Israel are leading the way globally in terms of the number of doses per head of population,
+# From the visualization it is evident that Gibraltar, Seychelles and Israel are leading the way
+# globally in terms of the number of doses per head of population,
 # Gibraltar has more than 91 doses given for every 100 people
 # The population of these countries isn't really high, that may be reason for this indicators.
 
