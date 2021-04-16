@@ -8,6 +8,8 @@ import seaborn as sns
 import plotly.graph_objects as go
 import plotly.express as px
 
+
+
 ## Import my dataset
 covid_vac_prog = pd.read_csv("/Users/deborahbarrett/Downloads/country_vaccinations-4.csv")
 
@@ -82,7 +84,7 @@ print(missing_values_count)
 
 ## Plot missing values
 covid_vac_prog.isna().sum().plot(kind="bar")
-sns.set_style("darkgrid")
+sns.set_style("darkgrid") ##There are five preset seaborn themes: darkgrid, whitegrid, dark, white, and ticks
 sns.set_context("paper")
 plt.xticks(rotation = 90)
 plt.show()
@@ -196,4 +198,102 @@ print(total_sorted.style.background_gradient(cmap = 'Oranges'))
 ## US has administerd 133.3 million doses of COVID-19
 ## China has administered 91.3 million
 ## Compared to the Bahamas which  has administered 110 doses of COVID vaccines so far.
+
+# Visualise the top ten countries with the most number of vaccines administered.
+fig, ax = plt.subplots(figsize=(18, 10))
+total_vacc = sns.barplot(ax=ax, data=total_sorted.iloc[:10],x="country",y="total_vaccinations")
+ax.set_xlabel('Country', fontsize=20)
+ax.set_ylabel('Total Vaccinations - absolute number of immunizations', fontsize=20)
+ax.set_title('Top 10 countries by total vaccinations', fontsize=20)
+for amount in total_vacc.patches:
+    total_vacc.annotate('{:.2f}'.format(amount.get_height()), (amount.get_x(), amount.get_height()+1))
+plt.show()
+
+##World COVID Vaccine Progress by Time
+## Vaccines were first administered in early Dec 2020.
+## Check to see how the world has made the progress in total vaccination numbers, people fully vaccinated over the past few months.
+## Group by date and take the sum of each feature for all countries.
+## Plot to see how 'total vaccinations' and 'people fully vaccinated'have progressed over a period of time.
+#groupby date and get the sum
+covid_vacc_by_date = cleaned_covid_data.groupby('date').sum()
+covid_vacc_by_date
+#plot 'date' vs 'total vaccinations'
+fig = px.bar(covid_vacc_by_date, x = covid_vacc_by_date.index, y ='total_vaccinations', hover_data=['total_vaccinations'],color='total_vaccinations',height=600, title='Total Vaccinations from 13th December to 25th March ')
+fig.show()
+
+## Total number of people vaccinated - a person, depending on the immunization scheme, will receive one or more (typically 2) vaccines;
+## At a certain moment, the number of vaccination might be larger than the number of people;
+people_vaccinated = cleaned_covid_data.groupby(['country'])['people_vaccinated'].max().reset_index()
+people_vaccinated_sorted = people_vaccinated.sort_values(by='people_vaccinated', ascending = False, ignore_index = True).style.background_gradient(cmap = 'Blues')
+people_vaccinated_sorted
+
+## Look at the  total number of vaccination doses administered per 100 people in the total population
+## In order to accesss how successful the vaccine has been rolled out either partially or completely.
+## Which country is leading in fully vaccinating the maximum percentage of its total population?
+## This differs from our earlier results of the country where highest number of people are fully vaccinated.
+## This calculation takes the population into consideration while calulating it.
+
+people_per_100 = cleaned_covid_data.groupby(['country'])['people_vaccinated_per_hundred'].max().reset_index()
+sorted_people_per_100 = people_per_100.sort_values(by='people_vaccinated_per_hundred', ascending = False, ignore_index = True)
+sorted_people_per_100.style.background_gradient(cmap = 'RdYlGn_r')
+## From this we can see that Gibraltar, Seychelles and Israel have the highest number of vaccinations does administered per 100
+## Biggest number in red, smaller number decreasing in colour to the smallerst numbers in green.
+## US overall has the highest number of vaccinations administered,
+## However Gibralter has the overall highest percentage of vaccinations administered per 100 people.
+## I will need to get the populations sizes of these countries
+##From the visualization it is evident that Gibraltar, Seychelles and Israel are leading the way globally in terms of the number of doses per head of population,
+## Gibraltar has more than 91 doses given for every 100 people
+## The population of these countries isn't really high, that may be reason for this indicators.
+
+## people_fully_vaccinated_per_hundred
+people_fully = cleaned_covid_data.groupby(['country'])['people_fully_vaccinated_per_hundred'].max().reset_index()
+people_fully_vac = people_fully.sort_values(by='people_fully_vaccinated_per_hundred',ascending = False, ignore_index = True)
+people_fully_vac.style.background_gradient(cmap = 'CMRmap_r')
+## Gibralter followed by Israel and Seychelles has the overall highest number of people fully vaccinated per hundred.
+## While the US has the highest number of vaccinations(US has administerd 133.3 million doses of COVID-19)
+
+#Plot the above i.e. top ten total number of vaccination doses administered per 100 people in the total population
+sns.set_style('dark') ## or darkgrid if I wanted lines
+sns.set_context('talk')
+fig, ax = plt.subplots(figsize=(16, 8))
+sns.barplot(ax=ax, data=people_fully_vac.head(10), y="country", x = "people_fully_vaccinated_per_hundred")
+plt.xlabel('Number of fully vaccinated people per hundred')
+plt.ylabel('Countries')
+plt.title(' Top 10 Countries - Number of People Fully Vaccinated per 100')
+plt.show()
+
+##Daily outlook - average number of vaccines administered
+average = cleaned_covid_data.groupby(['country'])['daily_vaccinations'].mean().reset_index()
+average_sorted = average.sort_values(by='daily_vaccinations', ascending = False, ignore_index = True)
+average_sorted.style.background_gradient(cmap = 'Oranges')
+## The US, China, India, the UK, and Brazil have the highest average daily vaccinations.
+
+## Trend of the sum of daily vaccinations
+trend = cleaned_covid_data.groupby("date", as_index=False)["daily_vaccinations"].sum()
+print(trend)
+
+##Plot trend of daily vaccinations over time
+# Set the ticks to show every 7 days to avoid overlapping of dates.
+# Autoformat the layout of the x-axis ticks.
+## used for setting a tick for every integer multiple of a base within the view interval
+import matplotlib.ticker as mticker
+fig, ax = plt.subplots(figsize=(20, 7))
+sns.lineplot(ax=ax, data=trend, x='date', y='daily_vaccinations', marker="8", linestyle= ":", color="blue")
+myLocator = mticker.MultipleLocator(7)
+ax.xaxis.set_major_locator(myLocator)
+fig.autofmt_xdate()
+plt.show()
+
+## This could be because of the approval of several different vaccines and the increase in availablilty of these vaccines to countries
+## over the first few months of 2021.
+## the general trend of average daily vaccinations is in an upward direction.
+
+## A way to work out what was the maximum daily vaccination for a particular country.
+cleaned_covid_data.loc[cleaned_covid_data["country"] == 'China', "daily_vaccinations"].max()
+
+##Plotting the daily average of vaccinations per country.
+group_by_country =cleaned_covid_data.groupby("country")
+group_by_country["daily_vaccinations"].mean().sort_values(ascending = False).head(25).plot.bar(figsize = (16 , 8), title = " Avg. daily vaccinations per country", color = 'purple')
+plt.ylabel('Number of daily vaccinations (in millions)')
+plt.show()
 
