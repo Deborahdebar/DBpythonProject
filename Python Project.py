@@ -165,13 +165,13 @@ for v in cleaned_covid_data["vaccines"].unique():
 output = {}
 for key, value in dict.items():
     output[key] = set(value)
-output
+print(output)
 
 # Find the number of values for each key in the dictionary.
 # This allows me to count the number of countries using each vaccine combination.
 for key, value in output.items():
     result = print(key, len([item for item in value if item]))
-print(result)
+
 # From the below we can see 38 countries are using Oxford / AstraZeneca,
 # 24 countries Moderna, Oxford/AstraZeneca, Pfizer/BioNTech
 # 21 countries are using Pfizer/BioNTech,
@@ -408,6 +408,32 @@ pct_change(15327,12122)
 country_denmark = country_check.loc[country_check['country'] == "Denmark"]
 print(country_denmark)
 
-#Checking to se
+# Checking to see rates greater than the 10th March
+# because this is when AstraZeneca issue began to arose
 country_denmark_date_check = country_denmark.loc[country_denmark['date'] > '2021-03-10']
 print(country_denmark_date_check)
+
+# Check the %age change for Denmark in Daily Vaccinations rates from 11th March to 24th.
+pct_change(17659,15360)
+
+# Netherlands check
+country_netherlands = country_check.loc[country_check['country'] == "Netherlands"]
+print(country_netherlands)
+
+# Netherlands date check in relation to AstraZeneca to see if any effect on daily rates
+country_netherlands_date_check = country_netherlands.loc[country_netherlands['date'] > '2021-03-10']
+print(country_netherlands_date_check)
+
+# Latvia country check now
+country_latvia = country_check.loc[country_check['country'] == "Latvia"]
+print(country_latvia)
+
+country_latvia_date_check = country_latvia.loc[country_latvia['date'] > '2021-03-10']
+print(country_latvia_date_check)
+
+# Latvia's daily rates begin to show a drop on 17th March.
+pct_change(2107,1791)
+
+# Latvia change from 11th until 19th -60% drop....
+pct_change(2107,853)
+
