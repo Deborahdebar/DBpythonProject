@@ -9,7 +9,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-
 # Import my dataset
 covid_vac_prog = pd.read_csv("/Users/deborahbarrett/Downloads/country_vaccinations-4.csv")
 
@@ -199,7 +198,7 @@ print(cleaned_covid_data.describe())
 # Total Vaccinations refers to the absolute number of total immunizations in the country.
 total_country_vacc = cleaned_covid_data.groupby(['country'])['total_vaccinations'].max().reset_index()
 total_sorted = total_country_vacc.sort_values('total_vaccinations', ascending = False, ignore_index = True)
-print(total_sorted.style.background_gradient(cmap = 'Oranges'))
+total_sorted.style.background_gradient(cmap = 'Oranges')
 # US has administered 133.3 million doses of COVID-19
 # China has administered 91.3 million
 # Compared to the Bahamas which  has administered 110 doses of COVID vaccines so far.
@@ -214,7 +213,7 @@ for amount in total_vacc.patches:
     total_vacc.annotate('{:.2f}'.format(amount.get_height()), (amount.get_x(), amount.get_height()+1))
 plt.show()
 
-# Visualise top 30 countires in terms of total vaccinations
+# Visualise top 30 countries in terms of total vaccinations
 top = 30
 vaccinations_data = cleaned_covid_data.groupby('country')['total_vaccinations'].max()
 vaccinations_data = pd.DataFrame(vaccinations_data)
@@ -223,7 +222,7 @@ fig = px.bar(x=vaccinations_data.index, y=vaccinations_data['total_vaccinations'
              color=vaccinations_data.index,
              title=f'Top {top} Countries - Total Vaccinations',
              labels={"x": "Country", "y": "Number of Vaccinations"},
-            color_discrete_sequence =px.colors.sequential.Electric)
+             color_discrete_sequence =px.colors.sequential.Electric)
 fig.show()
 
 # World COVID Vaccine Progress by Time
@@ -266,10 +265,10 @@ people_fully = cleaned_covid_data.groupby(['country'])['people_fully_vaccinated_
 people_fully_vac = people_fully.sort_values(by='people_fully_vaccinated_per_hundred',ascending = False, ignore_index = True)
 people_fully_vac.style.background_gradient(cmap = 'CMRmap_r')
 # Gibraltar followed by Israel and Seychelles has the overall highest number of people fully vaccinated per hundred.
-# While the US has the highest number of vaccinations(US has administerd 133.3 million doses of COVID-19)
+# While the US has the highest number of vaccinations(US has administered 133.3 million doses of COVID-19)
 
 # Plot the above i.e. top ten total number of vaccination doses administered per 100 people in the total population
-sns.set_style('dark') # or darkgrid if I wanted lines
+sns.set_style('dark')   # or darkgrid if I wanted lines
 sns.set_context('talk')
 fig, ax = plt.subplots(figsize=(16, 8))
 sns.barplot(ax=ax, data=people_fully_vac.head(10), y="country", x = "people_fully_vaccinated_per_hundred")
@@ -299,7 +298,6 @@ myLocator = mticker.MultipleLocator(7)
 ax.xaxis.set_major_locator(myLocator)
 fig.autofmt_xdate()
 plt.show()
-
 # This could be because of the approval of several different vaccines
 # and the increase in availability of these
 # vaccines to countries over the first few months of 2021.
@@ -322,7 +320,6 @@ plt.show()
 country_check = cleaned_covid_data[["date", "country", "daily_vaccinations"]]
 print(country_check.head(10))
 
-# China was looked at first country wise as this is where the virus
 # As China had the first reported case of COVID-19,
 # I wanted to see when they first started vaccinating.
 country_china = country_check.loc[country_check['country'] == 'China']
@@ -335,7 +332,7 @@ print(country_china.iloc[[1, -1]])
 #China min date within the dataset
 cleaned_covid_data.loc[cleaned_covid_data["country"] == "China", "date"].min()
 # This will report the first date that activity was reported for China
-# However there is no daily vaccinations on that min day as shown below.
+# However there is no daily vaccinations on the min day as shown below.
 # But there is a value somewhere in the dataset that is related to this min date
 # just not daily vaccinations
 
@@ -349,19 +346,19 @@ ax.xaxis.set_major_locator(myLocator)
 fig.autofmt_xdate()
 fig.show()
 
-# Check the minimum date within the dataset - this would be the first reported activity in the dataset.
+# Check the min date within the dataset - this would be the first reported activity in the dataset.
 print(cleaned_covid_data["date"].min())
 
 # I wanted to see which country reported activity for this date
 print(cleaned_covid_data[cleaned_covid_data["date"] == "2020-12-13"])
 # From this it should United Kingdom was the first country to report daily vaccinations within this dataset
 
-# Now I checked for the Uk
+# Now I checked for the UK
 country_uk = country_check.loc[country_check['country'] == 'United Kingdom']
 print(country_uk)
 
 # From this we can see the UK reported its first daily vaccination figures on the 14th
-# Yet they had  reported activity on the 13th within the dataset (total vaccinations & people vaccinated cols were populated with data
+# Yet they had reported activity on the 13th within the dataset total vaccinations & people vaccinated cols were populated with data
 # This was shown above on the min date check
 print(country_uk.iloc[[1, -1]])
 
@@ -443,9 +440,9 @@ def pct_change(first,second):
         return float('int')
     return change
 
-#Now check percentage change from 11th March to 24th - while calling the custom function.
+# Now check percentage change from 11th March to 24th - while calling the custom function.
 pct_change(15327,12122)
-#This shows there was a decrease of 20.9% from 11th March to 24th in Daily Vaccinations for Norway
+# This shows there was a decrease of 20.9% from 11th March to 24th in Daily Vaccinations for Norway
 
 #Denmark check
 country_denmark = country_check.loc[country_check['country'] == "Denmark"]
@@ -491,6 +488,12 @@ print(data_pop.columns)
 #Check data types of this additional dataset that has population
 print(data_pop.info())
 
+# See how many times a Country appears in the dataset
+print(data_pop['country'].value_counts())
+
+# Check if the names of the countries in the data correspond, if not, we will bring them to a single format.;
+data_pop = data_pop.replace({"USA": 'United States', 'UK': 'United Kingdom', 'Viet Nam': 'Vietnam'})
+
 ## Then merge with first dataset on the country cols as this is common to both datasets
 data_with_pop_merged = pd.merge(cleaned_covid_data, data_pop, how='left', on='country')
 
@@ -504,27 +507,37 @@ missing_values_merged = data_with_pop_merged.isnull().sum()
 print(missing_values_merged)
 
 # Replace the missing values with 0
-cleaned_merged_data = data_with_pop_merged.apply(lambda x: x.fillna(0) if x.dtype.kind in 'biufc'else x.fillna('unknown'))
+cleaned_merged_data = data_with_pop_merged.apply(lambda x: x.fillna(0)if x.dtype.kind in 'biufc'else x.fillna('unknown'))
 print(cleaned_merged_data.isnull().sum())
 
 # To list of all the columns in the dataset and the type of data each column contains
 print(cleaned_merged_data.info())
 
 # Use country & population columns within the merged dataset
-cleaned_merged_data = data_with_pop_merged[["country", "population"]]
-print(cleaned_merged_data.head(10))
-print(cleaned_merged_data.tail(10))
+cleaned_merged_data_pop_check = data_with_pop_merged[["country", "population"]]
+print(cleaned_merged_data_pop_check.head(10))
+print(cleaned_merged_data_pop_check.tail(10))
 
 # Unique number of population
-print(len(cleaned_merged_data.population.unique()))
+print(len(cleaned_merged_data_pop_check.population.unique()))
 
 # Check the population of Gibraltar
-print(cleaned_merged_data[cleaned_merged_data["country"] == "Gibraltar"])
+print(cleaned_merged_data_pop_check[cleaned_merged_data_pop_check["country"] == "Gibraltar"])
 
 # Check the population of Seychelles
-print(cleaned_merged_data[cleaned_merged_data["country"] == "Seychelles"])
+print(cleaned_merged_data_pop_check[cleaned_merged_data_pop_check["country"] == "Seychelles"])
 
 # Check the population of Israel
-print(cleaned_merged_data[cleaned_merged_data["country"] == "Israel"])
+print(cleaned_merged_data_pop_check[cleaned_merged_data_pop_check["country"] == "Israel"])
 
-
+# Check the total deaths rates in the new merged data set
+total_country_deaths = cleaned_merged_data.groupby(['country'])['total_deaths'].max().reset_index()
+total_sorted_deaths = total_country_deaths.sort_values('total_deaths', ascending = False, ignore_index = True)
+fig, ax = plt.subplots(figsize=(18, 10))
+total_death = sns.barplot(ax=ax, data=total_sorted_deaths.iloc[:10],x="country",y="total_deaths")
+ax.set_xlabel('Country', fontsize=20)
+ax.set_ylabel('Total Deaths', fontsize=20)
+ax.set_title('Top 10 countries by total deaths', fontsize=20)
+for amount in total_death.patches:
+    total_death.annotate('{:.2f}'.format(amount.get_height()), (amount.get_x(), amount.get_height()+1))
+plt.show()
