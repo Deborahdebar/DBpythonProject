@@ -10,7 +10,7 @@ import plotly.express as px
 
 
 # Import my dataset
-covid_vac_prog = pd.read_csv("/Users/deborahbarrett/Downloads/country_vaccinations-4.csv")
+covid_vac_prog = pd.read_csv("country_vaccinations-4.csv")
 
 # To check the length of the dataset
 print(len(covid_vac_prog))
@@ -424,7 +424,7 @@ print(country_norway_date_check)
 print(country_norway.dtypes)
 
 # I want to check the percentage difference from the 11th March until the last date in the dataset
-# Norway, Netherlands, Denmark and Lativa
+# Norway, Netherlands, Denmark and Latvia
 # I will create a custom function so that I use this for a few countries
 def pct_change(first,second):
     diff = second - first
@@ -479,7 +479,7 @@ pct_change(2107,853)
 
 # I needed to check population of certain countries - needed to get another dataset that has this info
 # rather than a general Google search
-data_pop = pd.read_csv("/Users/deborahbarrett/Downloads/worldometer_coronavirus_summary_data.csv")
+data_pop = pd.read_csv("worldometer_coronavirus_summary_data.csv")
 print(data_pop.shape)
 
 # Examine the names of the columns & to see if all are needed
