@@ -485,7 +485,7 @@ print(data_pop.shape)
 # Examine the names of the columns & to see if all are needed
 print(data_pop.columns)
 
-#Check data types of this additional dataset that has population
+# Check data types of this additional dataset that has population
 print(data_pop.info())
 
 # See how many times a Country appears in the dataset
@@ -541,3 +541,16 @@ ax.set_title('Top 10 countries by total deaths', fontsize=20)
 for amount in total_death.patches:
     total_death.annotate('{:.2f}'.format(amount.get_height()), (amount.get_x(), amount.get_height()+1))
 plt.show()
+
+
+# Check the above using a different method.
+top_death = 30
+deaths_data = cleaned_merged_data.groupby('country')['total_deaths'].max()
+deaths_data = pd.DataFrame(deaths_data)
+deaths_data = deaths_data.sort_values(ascending=False, by='total_deaths').iloc[:top_death]
+fig = px.bar(x=deaths_data.index, y=deaths_data['total_deaths'],
+             color=deaths_data.index,
+             title=f'top {top_death} Countries - Total Deaths',
+             labels={"x": "Country", "y": "Number of Deaths"},
+            color_discrete_sequence =px.colors.sequential.Electric)
+fig.show()
