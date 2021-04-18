@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
+
 # Import my dataset
 covid_vac_prog = pd.read_csv("country_vaccinations-4.csv")
 
@@ -329,7 +330,7 @@ print(country_china)
 # and last recorded date in the dataset is 25th March
 print(country_china.iloc[[1, -1]])
 
-#China min date within the dataset
+# China min. date within the dataset
 cleaned_covid_data.loc[cleaned_covid_data["country"] == "China", "date"].min()
 # This will report the first date that activity was reported for China
 # However there is no daily vaccinations on the min day as shown below.
@@ -444,7 +445,7 @@ def pct_change(first,second):
 pct_change(15327,12122)
 # This shows there was a decrease of 20.9% from 11th March to 24th in Daily Vaccinations for Norway
 
-#Denmark check
+# Denmark check
 country_denmark = country_check.loc[country_check['country'] == "Denmark"]
 print(country_denmark)
 
@@ -494,7 +495,7 @@ print(data_pop['country'].value_counts())
 # Check if the names of the countries in the data correspond, if not, we will bring them to a single format.;
 data_pop = data_pop.replace({"USA": 'United States', 'UK': 'United Kingdom', 'Viet Nam': 'Vietnam'})
 
-## Then merge with first dataset on the country cols as this is common to both datasets
+# Then merge with first dataset on the country cols as this is common to both datasets
 data_with_pop_merged = pd.merge(cleaned_covid_data, data_pop, how='left', on='country')
 
 # Check the first 5 rows of the merged dataset
@@ -544,13 +545,3 @@ plt.show()
 
 
 # Check the above using a different method.
-top_death = 30
-deaths_data = cleaned_merged_data.groupby('country')['total_deaths'].max()
-deaths_data = pd.DataFrame(deaths_data)
-deaths_data = deaths_data.sort_values(ascending=False, by='total_deaths').iloc[:top_death]
-fig = px.bar(x=deaths_data.index, y=deaths_data['total_deaths'],
-             color=deaths_data.index,
-             title=f'top {top_death} Countries - Total Deaths',
-             labels={"x": "Country", "y": "Number of Deaths"},
-            color_discrete_sequence =px.colors.sequential.Electric)
-fig.show()
