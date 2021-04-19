@@ -21,7 +21,7 @@ print(len(covid_vac_prog))
 print(covid_vac_prog.head())
 
 # To check the last 5 rows
-# I can see that Zimbabwe
+# I can see that Zimbabwe is the last country mentioned in the dateset
 print(covid_vac_prog.tail())
 
 # Find how many rows and columns
@@ -465,7 +465,7 @@ print(country_netherlands)
 country_netherlands_date_check = country_netherlands.loc[country_netherlands['date'] > '2021-03-10']
 print(country_netherlands_date_check)
 
-# Latvia country check now
+# Latvia country check
 country_latvia = country_check.loc[country_check['country'] == "Latvia"]
 print(country_latvia)
 
@@ -507,15 +507,21 @@ print(data_with_pop_merged.info())
 missing_values_merged = data_with_pop_merged.isnull().sum()
 print(missing_values_merged)
 
-# Replace the missing values with 0
-cleaned_merged_data = data_with_pop_merged.apply(lambda x: x.fillna(0)if x.dtype.kind in 'biufc'else x.fillna('unknown'))
+# Replace the missing values with 0 using numpy
+# inf is infinity - a value that is greater than any other value.
+# -inf is therefore smaller than any other value.
+# infinity minus infinity to equal any real number.
+# Therefore, infinity subtracted from infinity is undefined
+cleaned_merged_data = data_with_pop_merged.replace([np.inf, -np.inf], np.nan)
+cleaned_merged_data= cleaned_merged_data.fillna(0)
+print(cleaned_merged_data.head())
 print(cleaned_merged_data.isnull().sum())
 
 # To list of all the columns in the dataset and the type of data each column contains
 print(cleaned_merged_data.info())
 
 # Use country & population columns within the merged dataset
-cleaned_merged_data_pop_check = data_with_pop_merged[["country", "population"]]
+cleaned_merged_data_pop_check = cleaned_merged_data[["country", "population"]]
 print(cleaned_merged_data_pop_check.head(10))
 print(cleaned_merged_data_pop_check.tail(10))
 
@@ -532,6 +538,9 @@ print(cleaned_merged_data_pop_check[cleaned_merged_data_pop_check["country"] == 
 print(cleaned_merged_data_pop_check[cleaned_merged_data_pop_check["country"] == "Israel"])
 
 # Check the total deaths rates in the new merged data set
+# Groupby Country & Total Deaths column to get max
+# reset_index() is a method to reset index of a Data Frame.
+# reset_index() method sets a list of integer ranging from 0 to length of data as index.
 total_country_deaths = cleaned_merged_data.groupby(['country'])['total_deaths'].max().reset_index()
 total_sorted_deaths = total_country_deaths.sort_values('total_deaths', ascending = False, ignore_index = True)
 fig, ax = plt.subplots(figsize=(18, 10))
@@ -544,4 +553,31 @@ for amount in total_death.patches:
 plt.show()
 
 
-# Check the above using a different method.
+# Check the above using a different method for the top 30 countries with the highest death rates.
+# Group by Country and get the max of total deaths
+# Sort descending and get the top 30 countries using iloc (positional index)
+Death = 30
+deaths_data = cleaned_merged_data.groupby('country')['total_deaths'].max()
+deaths_data = pd.DataFrame(deaths_data)
+deaths_data = deaths_data.sort_values(ascending=False, by='total_deaths').iloc[:Death]
+fig = px.bar(x=deaths_data.index, y=deaths_data['total_deaths'],
+             color=deaths_data.index,
+             title=f'Top {Death} Countries - Total Deaths',
+             labels={"x": "Country", "y": "Number of Deaths"},
+            color_discrete_sequence =px.colors.sequential.Viridis)
+fig.show()
+
+# Check name of columns in cleaned merged dataset
+print(cleaned_merged_data.columns)
+
+# Check
+country_check_death = cleaned_merged_data[["date", "country", "total_deaths"]]
+print(country_check_death.head())
+
+
+
+
+
+
+
+
