@@ -157,6 +157,7 @@ plt.show()
 
 # Now I am going to create a dictionary to see what countries are using what vaccine brand
 # Create a dictionary of each vaccine combination and its country of usage.
+# Access values by looking up for key instead of an index
 
 dict = {}
 for v in cleaned_covid_data["vaccines"].unique():
@@ -247,7 +248,6 @@ print(people_vaccinated_sorted)
 # Which country is leading in fully vaccinating the maximum percentage of its total population?
 # This differs from our earlier results of the country where highest number of people are fully vaccinated.
 # This calculation takes the population into consideration while calculating it.
-
 people_per_100 = cleaned_covid_data.groupby(['country'])['people_vaccinated_per_hundred'].max().reset_index()
 sorted_people_per_100 = people_per_100.sort_values(by='people_vaccinated_per_hundred', ascending = False, ignore_index = True)
 sorted_people_per_100.style.background_gradient(cmap = 'RdYlGn_r')
@@ -574,6 +574,28 @@ print(cleaned_merged_data.columns)
 country_check_death = cleaned_merged_data[["date", "country", "total_deaths"]]
 print(country_check_death.head())
 
+# Iterrows()function helps loop through each row of the dataframe.
+# Returns an iterator containing index of each row and the data in each row as a series
+# use 'next' to see the content of the iterrows
+# iterrows return a tuple with row index and row data as a series object
+print(next(cleaned_merged_data.iterrows()))
+
+# Get the content row by taking the 2nd element of the tuple
+row = next(cleaned_merged_data.iterrows())[1]
+
+# Loop through Pandas df & access the index of each row & the content of each row easily
+# Print the iterator from iterrows() & see that result is an index & series for each row
+for index, row in covid_vac_prog.head(n=2).iterrows():
+    print(index,row)
+
+#Since the row data is returned as a series I can use the column names to access each column's value in the row.
+# Here loop through each row & assign the row index a& row data to variables named index & row.
+# Then we access row data using the column names of the dataframe
+# iterate over rows with iterrrows()
+for index, row in cleaned_merged_data.head().iterrows():
+    # access data using column names (selected a few).
+    print(index, row['country'],row['iso_code'], row['date'],row['total_vaccinations'],row['people_vaccinated'],
+          row['people_fully_vaccinated'],row['daily_vaccinations'],row['total_deaths'])
 
 
 
