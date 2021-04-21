@@ -8,8 +8,6 @@ import seaborn as sns
 import plotly.graph_objects as go
 import plotly.express as px
 
-
-
 # Import my dataset
 covid_vac_prog = pd.read_csv("country_vaccinations-4.csv")
 
@@ -88,6 +86,7 @@ covid_vac_prog.isna().sum().plot(kind="bar")
 sns.set_style("darkgrid")  # There are five preset seaborn themes: darkgrid, whitegrid, dark, white, and ticks
 sns.set_context("paper")
 plt.xticks(rotation = 90)
+plt.title('Missing Values')
 plt.tight_layout()
 plt.show()
 
@@ -295,6 +294,7 @@ print(trend)
 import matplotlib.ticker as mticker
 fig, ax = plt.subplots(figsize=(20, 7))
 sns.lineplot(ax=ax, data=trend, x='date', y='daily_vaccinations', marker="8", linestyle= ":", color="blue")
+plt.title('Trend of daily vaccinations', weight='bold') # weight makes it bold
 myLocator = mticker.MultipleLocator(7)
 ax.xaxis.set_major_locator(myLocator)
 fig.autofmt_xdate()
@@ -342,6 +342,7 @@ cleaned_covid_data.loc[cleaned_covid_data["country"] == "China", "date"].min()
 # Autoformat the layout of the x-axis ticks.
 fig, ax = plt.subplots(figsize=(20, 7))
 sns.lineplot(ax=ax, data=country_china, x='date', y='daily_vaccinations', marker="8", linestyle= ":", color="red")
+plt.title('Daily Vaccination Progress in China', weight='bold')
 myLocator = mticker.MultipleLocator(7)
 ax.xaxis.set_major_locator(myLocator)
 fig.autofmt_xdate()
@@ -367,6 +368,7 @@ print(country_uk.iloc[[1, -1]])
 # Autoformat the layout of the x-axis ticks.
 fig, ax = plt.subplots(figsize=(20, 7))
 sns.lineplot(ax=ax, data=country_uk, x='date', y='daily_vaccinations', marker="8", linestyle= ":", color="darkgoldenrod")
+plt.title('Daily Vaccination Progress in United Kingdom', weight='bold')
 myLocator = mticker.MultipleLocator(7)
 ax.xaxis.set_major_locator(myLocator)
 fig.autofmt_xdate()
@@ -395,6 +397,7 @@ print(cleaned_covid_data.loc[cleaned_covid_data["country"] == 'Ireland', "daily_
 # Plot how daily vaccs look to see any peaks and troughs
 fig, ax = plt.subplots(figsize=(20, 7))
 sns.lineplot(ax=ax, data=country_ireland, x='date', y='daily_vaccinations', marker="8", linestyle= ":", color="green")
+plt.title('Daily Vaccination Progress in Ireland', weight='bold')
 myLocator = mticker.MultipleLocator(7)
 ax.xaxis.set_major_locator(myLocator)
 fig.autofmt_xdate()
@@ -454,7 +457,7 @@ print(country_denmark)
 country_denmark_date_check = country_denmark.loc[country_denmark['date'] > '2021-03-10']
 print(country_denmark_date_check)
 
-# Check the %age change for Denmark in Daily Vaccinations rates from 11th March to 24th.
+# Check the % change for Denmark in Daily Vaccinations rates from 11th March to 24th.
 pct_change(17659,15360)
 
 # Netherlands check
@@ -465,7 +468,7 @@ print(country_netherlands)
 country_netherlands_date_check = country_netherlands.loc[country_netherlands['date'] > '2021-03-10']
 print(country_netherlands_date_check)
 
-# Latvia country check
+# Latvia country check to see if daily rates decreased due to AstraZeneca issue
 country_latvia = country_check.loc[country_check['country'] == "Latvia"]
 print(country_latvia)
 
@@ -479,7 +482,7 @@ pct_change(2107,1791)
 pct_change(2107,853)
 
 # I needed to check population of certain countries - needed to get another dataset that has this info
-# rather than a general Google search
+# rather than a general Google search - imported another dataset
 data_pop = pd.read_csv("worldometer_coronavirus_summary_data.csv")
 print(data_pop.shape)
 
@@ -492,10 +495,11 @@ print(data_pop.info())
 # See how many times a Country appears in the dataset
 print(data_pop['country'].value_counts())
 
-# Check if the names of the countries in the data correspond, if not, we will bring them to a single format.;
+# At a quick glance at the dataset I saw US, UK and Vietnam were not in the same format as my main dataset.
+# I replaced these to match.
 data_pop = data_pop.replace({"USA": 'United States', 'UK': 'United Kingdom', 'Viet Nam': 'Vietnam'})
 
-# Then merge with first dataset on the country cols as this is common to both datasets
+# Then merge with first dataset on the country column as this is common to both datasets
 data_with_pop_merged = pd.merge(cleaned_covid_data, data_pop, how='left', on='country')
 
 # Check the first 5 rows of the merged dataset
@@ -588,14 +592,15 @@ row = next(cleaned_merged_data.iterrows())[1]
 for index, row in covid_vac_prog.head(n=2).iterrows():
     print(index,row)
 
-#Since the row data is returned as a series I can use the column names to access each column's value in the row.
-# Here loop through each row & assign the row index a& row data to variables named index & row.
-# Then we access row data using the column names of the dataframe
+# Since the row data is returned as a series I can use the column names to access each column's value in the row.
+# Loop through each row & assign the row index & row data to variables named index & row.
+# Then access row data using the column names of the dataframe
 # iterate over rows with iterrrows()
 for index, row in cleaned_merged_data.head().iterrows():
     # access data using column names (selected a few).
     print(index, row['country'],row['iso_code'], row['date'],row['total_vaccinations'],row['people_vaccinated'],
           row['people_fully_vaccinated'],row['daily_vaccinations'],row['total_deaths'])
+
 
 
 
