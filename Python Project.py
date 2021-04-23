@@ -66,7 +66,7 @@ print(covid_vac_prog.dtypes)
 # To list of all the columns in the dataset and the type of data each column contains
 print(covid_vac_prog.info())
 
-# All cols appear to have the correct dataset except for the date col - I saw this earlier
+# All cols appear to have the correct datatype except for the date col - I saw this earlier
 # The dates are not represented by the correct data type
 # I am going to use the .to_datetime() to parse the the column as Datetime
 covid_vac_prog['date']=pd.to_datetime(covid_vac_prog['date'])
@@ -155,7 +155,7 @@ plt.ylabel('Country', fontsize=20)
 plt.show()
 
 # Now I am going to create a dictionary to see what countries are using what vaccine brand
-# Create a dictionary of each vaccine combination and its country of usage.
+# Create a dictionary of each vaccine combination and its country usage.
 # Access values by looking up for key instead of an index
 
 dict = {}
@@ -353,7 +353,7 @@ print(cleaned_covid_data["date"].min())
 
 # I wanted to see which country reported activity for this date
 print(cleaned_covid_data[cleaned_covid_data["date"] == "2020-12-13"])
-# From this it should United Kingdom was the first country to report daily vaccinations within this dataset
+# From this it showed United Kingdom was the first country to report daily vaccinations within this dataset
 
 # Now I checked for the UK
 country_uk = country_check.loc[country_check['country'] == 'United Kingdom']
@@ -374,7 +374,7 @@ ax.xaxis.set_major_locator(myLocator)
 fig.autofmt_xdate()
 plt.show()
 
-# Plotting the daily vaccination rates in the UK show that the daily rates continued to grow levelled off in Feb
+# Plotting the daily vaccination rates in the UK show that the daily rates continued to grow & levelled off in Feb
 # Daily vac rates grew again mid March
 # specifically around 11th March, so I wanted to check rates from this date onwards
 country_uk_date_check = country_uk.loc[country_uk['date'] > '2021-03-11']
@@ -574,7 +574,7 @@ fig.show()
 # Check name of columns in cleaned merged dataset
 print(cleaned_merged_data.columns)
 
-# Check
+# Check deaths
 country_check_death = cleaned_merged_data[["date", "country", "total_deaths"]]
 print(country_check_death.head())
 
@@ -584,7 +584,7 @@ print(country_check_death.head())
 # iterrows return a tuple with row index and row data as a series object
 print(next(cleaned_merged_data.iterrows()))
 
-# Get the content row by taking the 2nd element of the tuple
+# Get the content of the  row by taking the 2nd element of the tuple
 row = next(cleaned_merged_data.iterrows())[1]
 
 # Loop through Pandas df & access the index of each row & the content of each row easily
